@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import UserForm from './components/UserForm';
 import LoanForm from './components/LoanForm';
 import LoanList from './components/LoanList';
@@ -12,17 +13,21 @@ const App = () => {
   };
 
   return (
-    <Container>
-      <h1>Loan Amortization App</h1>
-      {!userId ? (
-        <UserForm onUserCreated={handleUserCreated} />
-      ) : (
-        <>
-        <LoanForm onLoanCreated={() => {}} />
-        <LoanList userId={userId} />
-        </>
-      )}
-    </Container>
+    <Router>
+      <Container>
+        <h1>Loan Amortization App</h1>
+        <Routes>
+          <Route path="/" element={<UserForm onUserCreated={handleUserCreated} />} />
+          <Route path="/loanlist/:userId" element={<LoanList userId={userId} />} />
+        </Routes>
+        {userId && (
+          <>
+            <LoanForm onLoanCreated={() => {}} />
+            <LoanList userId={userId} />
+          </>
+        )}
+      </Container>
+    </Router>
   );
 };
 
