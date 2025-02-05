@@ -1,0 +1,1 @@
+Even though the user ID and owner ID is the same, user could not update loan data using given API call, as shown in picture.
