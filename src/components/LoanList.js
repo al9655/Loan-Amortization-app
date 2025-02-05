@@ -7,6 +7,8 @@ import { Button } from '@mui/material';
 const LoanList = ({ userId }) => {
     const [loans, setLoans] = useState([]);
     const [showLoanForm, setShowLoanForm] = useState(false);
+    const [message, setMessage] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const getLoans = async () => {
@@ -17,9 +19,18 @@ const LoanList = ({ userId }) => {
     }, [userId]);
 
     const handleLoanCreated = async (loanData) => {
-        const newLoan = await createLoan({ ...loanData, owner_id: userId });
-        setLoans([...loans, newLoan.data]);
-        setShowLoanForm(false);
+        try {
+            await createLoan({ ...loanData, owner_id: userId });
+            setMessage('Loan created successfully');
+            setError(null);
+            setShowLoanForm(false);
+            const response = await fetchUserLoans(userId);
+            setLoans(response.data);
+        } catch (error) {
+            const errorMessage = error.response?.data?.detail || 'An error occurred';
+            setError(Array.isArray(errorMessage) ? errorMessage.map(err => err.msg).join(', ') : errorMessage);
+            console.error('Error creating loan:', error.response?.data || error.message);
+        }
     };
 
     return (
@@ -29,6 +40,8 @@ const LoanList = ({ userId }) => {
                 {showLoanForm ? 'Cancel' : 'Create Loan'}
             </Button>
             {showLoanForm && <LoanForm onLoanCreated={handleLoanCreated} />}
+            {message && <p style={{ color: 'green' }}>{message}</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
             {loans.map((loan) => (
                 <div key={loan.id}>
                     <h3>Loan ID: {loan.id}</h3>
