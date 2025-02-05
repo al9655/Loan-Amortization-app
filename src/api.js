@@ -19,8 +19,10 @@ export const fetchUserLoans = async (userId) => {
     return await axios.get(`${API_URL}/users/${userId}/loans`);
 };
 
-export const fetchLoanSchedule = async (loanId) => {
-    return await axios.get(`${API_URL}/loans/${loanId}`);
+export const fetchLoanSchedule = async (loanId, userId) => {
+    return await axios.get(`${API_URL}/loans/${loanId}`, {
+        params: { user_id: userId }
+    });
 };
 
 export const fetchLoanSummary = async (loanId, month) => {
@@ -29,4 +31,8 @@ export const fetchLoanSummary = async (loanId, month) => {
 
 export const shareLoan = async (loanId, shareData) => {
     return await axios.post(`${API_URL}/loans/${loanId}/share`, shareData);
+};
+
+export const updateLoan = async (loanId, loanData) => {
+    return await axios.put(`${API_URL}/loans/${loanId}`, loanData);
 };

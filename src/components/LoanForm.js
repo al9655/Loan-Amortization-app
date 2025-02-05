@@ -29,29 +29,38 @@ const LoanForm = ({ onLoanCreated }) => {
             return;
         }
 
-        const loanData = { amount: loanAmount, apr: loanApr, term: loanTerm, status };
-        onLoanCreated(loanData);
+        setError(null);
+        const loanData = {
+            amount: loanAmount,
+            apr: loanApr,
+            term: loanTerm,
+            status: status,
+        };
+
+        try {
+            await onLoanCreated(loanData);
+        } catch (err) {
+            setError('Failed to create loan');
+            console.error('Error creating loan:', err);
+        }
     };
 
     return (
         <form onSubmit={handleSubmit}>
             <TextField
                 label="Amount"
-                type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 required
             />
             <TextField
                 label="APR"
-                type="number"
                 value={apr}
                 onChange={(e) => setApr(e.target.value)}
                 required
             />
             <TextField
-                label="Term (in months)"
-                type="number"
+                label="Term"
                 value={term}
                 onChange={(e) => setTerm(e.target.value)}
                 required

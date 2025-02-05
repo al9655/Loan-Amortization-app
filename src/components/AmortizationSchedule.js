@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { fetchLoanSchedule } from '../api';
 
-const AmortizationSchedule = ({ loanId }) => {
+const AmortizationSchedule = ({ loanId, userId }) => {
     const [schedule, setSchedule] = useState([]);
 
     useEffect(() => {
         const getSchedule = async () => {
-            const response = await fetchLoanSchedule(loanId);
-            setSchedule(response.data);
+            try {
+                const response = await fetchLoanSchedule(loanId, userId);
+                setSchedule(response.data);
+            } catch (error) {
+                console.error('Error fetching loan schedule:', error.response?.data || error.message);
+            }
         };
         getSchedule();
-    }, [loanId]);
+    }, [loanId, userId]);
+
+    const roundToHundredth = (num) => Math.round(num * 100) / 100;
 
     return (
         <div>
@@ -29,10 +35,10 @@ const AmortizationSchedule = ({ loanId }) => {
                     {schedule.map((payment) => (
                         <tr key={payment.month}>
                             <td>{payment.month}</td>
-                            <td>{payment.payment}</td>
-                            <td>{payment.principal}</td>
-                            <td>{payment.interest}</td>
-                            <td>{payment.balance}</td>
+                            <td>{roundToHundredth(payment.total_payment)}</td>
+                            <td>{roundToHundredth(payment.principal_payment)}</td>
+                            <td>{roundToHundredth(payment.interest_payment)}</td>
+                            <td>{roundToHundredth(payment.close_balance)}</td>
                         </tr>
                     ))}
                 </tbody>
