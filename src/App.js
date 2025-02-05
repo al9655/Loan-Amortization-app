@@ -22,7 +22,6 @@ const App = () => {
         </Routes>
         {userId && (
           <>
-            <LoanForm onLoanCreated={() => {}} />
             <LoanList userId={userId} />
           </>
         )}

@@ -12,22 +12,22 @@ const UserForm = ({ onUserCreated }) => {
         try {
             const users = await fetchUsers();
             const existingUser = users.find(user => user.username === name);
-
+    
             if (existingUser) {
                 setMessage('User signed in successfully');
                 setError(null);
                 onUserCreated(existingUser.id);
-                window.location.href = `/loanlist/${existingUser.id}`;
             } else {
                 const newUser = await createUser({ name });
                 setMessage('User created successfully');
                 setError(null);
                 onUserCreated(newUser.data.id);
-                window.location.href = `/loanlist/${newUser.data.id}`;
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'An error occurred');
+            const errorMessage = err.response?.data?.detail || 'An error occurred';
+            setError(Array.isArray(errorMessage) ? errorMessage.map(err => err.msg).join(', ') : errorMessage);
             setMessage(null);
+            console.error('Error creating user:', err.response?.data || err.message);
         }
     };
 

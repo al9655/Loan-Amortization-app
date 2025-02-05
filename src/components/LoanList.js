@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchUserLoans, createLoan } from '../api';
 import AmortizationSchedule from './AmortizationSchedule';
+import UserForm from './UserForm';
 import LoanForm from './LoanForm';
 import { Button } from '@mui/material';
 
@@ -12,8 +13,13 @@ const LoanList = ({ userId }) => {
 
     useEffect(() => {
         const getLoans = async () => {
-            const response = await fetchUserLoans(userId);
-            setLoans(response.data);
+            try {
+                const response = await fetchUserLoans(userId);
+                setLoans(response.data);
+            } catch (error) {
+                setError('Failed to fetch loans');
+                console.error('Error fetching loans:', error.response?.data || error.message);
+            }
         };
         getLoans();
     }, [userId]);
@@ -35,19 +41,21 @@ const LoanList = ({ userId }) => {
 
     return (
         <div>
-            <h2>Your Loans</h2>
-            <Button onClick={() => setShowLoanForm(!showLoanForm)}>
-                {showLoanForm ? 'Cancel' : 'Create Loan'}
-            </Button>
-            {showLoanForm && <LoanForm onLoanCreated={handleLoanCreated} />}
-            {message && <p style={{ color: 'green' }}>{message}</p>}
+            <h1>Loan List</h1>
+            {message && <p>{message}</p>}
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            {loans.map((loan) => (
-                <div key={loan.id}>
-                    <h3>Loan ID: {loan.id}</h3>
-                    <AmortizationSchedule loanId={loan.id} />
-                </div>
-            ))}
+            <Button onClick={() => setShowLoanForm(true)}>Create Loan</Button>
+            {showLoanForm && <LoanForm onLoanCreated={handleLoanCreated} />}
+            <ul>
+                {loans.map((loan) => (
+                    <li key={loan.id}>
+                        <p>Amount: {loan.amount}</p>
+                        <p>APR: {loan.apr}%</p>
+                        <p>Term: {loan.term} years</p>
+                        <p>Status: {loan.status}</p>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 };
