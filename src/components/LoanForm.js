@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createLoan } from '../api';
 import { TextField, Button } from '@mui/material';
 
 const LoanForm = ({ onLoanCreated }) => {
@@ -10,8 +9,7 @@ const LoanForm = ({ onLoanCreated }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const loanData = { principal, interestRate, term };
-        await createLoan(loanData);
-        onLoanCreated();
+        onLoanCreated(loanData);
     };
 
     return (
